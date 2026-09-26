@@ -91,6 +91,17 @@
         .shop-intro h2 { margin: 0; font-family: Impact, Bahnschrift, sans-serif; font-size: 2.25em; font-weight: 500; }
         .shop-intro > p { max-width: 340px; margin: 0 0 4px; color: var(--text-muted); }
         .categories { gap: 8px; margin: 24px auto 18px; padding: 0 20px; }
+        .catalog-toolbar { max-width: 1240px; margin: 0 auto 18px; padding: 0 20px; display: grid; grid-template-columns: minmax(240px, 1fr) auto minmax(180px, 220px) auto; align-items: end; gap: 14px; }
+        .catalog-search, .catalog-sort { display: block; color: var(--text-muted); font-size: 0.78em; }
+        .catalog-search span, .catalog-sort span { display: block; margin: 0 0 6px 2px; }
+        .catalog-search input, .catalog-sort select { width: 100%; height: 44px; padding: 0 12px; border: 1px solid #354039; border-radius: 8px; background: #101613; color: var(--text-main); font: inherit; font-size: 1rem; }
+        .catalog-result-count { align-self: center; color: var(--text-muted); font-size: 0.84em; white-space: nowrap; }
+        .favorites-filter { height: 44px; padding: 0 14px; border: 1px solid #354039; border-radius: 8px; background: #151b19; color: var(--text-main); font: inherit; cursor: pointer; white-space: nowrap; }
+        .favorites-filter.active { border-color: var(--primary); color: var(--primary); }
+        .product-img-wrapper { position: relative; }
+        .favorite-toggle { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; border: 1px solid #d3d9d1; border-radius: 50%; background: rgba(255,255,255,0.92); color: #263127; font-size: 1.25em; cursor: pointer; }
+        .favorite-toggle.active { color: #c04f58; }
+        .empty-results { max-width: 1240px; margin: 12px auto 80px; padding: 30px 20px; color: var(--text-muted); text-align: center; }
         .category-btn { border-radius: 8px; border-color: #303b34; padding: 10px 18px; }
         .category-btn:hover, .category-btn.active { background: var(--primary); border-color: var(--primary); color: #151a12; box-shadow: none; transform: none; }
         .shop-section { max-width: 1240px; grid-template-columns: repeat(auto-fill, minmax(245px, 1fr)); gap: 18px; }
@@ -148,6 +159,11 @@
             .shop-intro { margin-top: 36px; align-items: start; flex-direction: column; gap: 8px; }
             .shop-intro h2 { font-size: 1.9em; }
             .categories { justify-content: start; }
+            .catalog-toolbar { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 0 14px; }
+            .catalog-search { grid-column: 1 / -1; }
+            .catalog-result-count { grid-column: 1; grid-row: 2; }
+            .catalog-sort { grid-column: 1 / -1; grid-row: 3; }
+            .favorites-filter { grid-column: 2; grid-row: 2; }
             .shop-section { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; padding: 0 14px 64px; }
             .delivery-strip { margin: -24px 14px 56px; padding: 18px 4px; grid-template-columns: 1fr; gap: 14px; }
             .modal-content { max-width: calc(100% - 24px); padding: 28px 20px; }
@@ -189,44 +205,51 @@
         <button class="category-btn" onclick="filterCategory('liquids', this)">Liquidy</button>
         <button class="category-btn" onclick="filterCategory('devices', this)">Jednorazówki</button>
     </div>
+    <div class="catalog-toolbar">
+        <label class="catalog-search" for="product-search"><span>Szukaj w ofercie</span><input id="product-search" type="search" placeholder="Produkt, smak, pojemność..." oninput="applyProductFilters()"></label>
+        <span class="catalog-result-count" id="product-result-count" aria-live="polite">6 produktów</span>
+        <label class="catalog-sort" for="product-sort"><span>Sortuj</span><select id="product-sort" onchange="applyProductFilters()"><option value="featured">Polecane</option><option value="price-asc">Cena: rosnąco</option><option value="price-desc">Cena: malejąco</option><option value="name">Nazwa: A–Z</option></select></label>
+        <button type="button" class="favorites-filter" id="favorites-filter" aria-pressed="false" onclick="toggleFavoritesFilter()">☆ Ulubione</button>
+    </div>
         <div class="shop-section">
         <!-- PRODUKT 1 -->
-        <div class="card" data-category="liquids" onclick="openProductModal('Liquid Vapen 10ml', 17.99, 'Oficjalna sól nikotynowa o zbalansowanym hicie w gardło i wyrazistym aromacie.', ['Watermelon Ice', 'Blueberry Pomegranate', 'Kiwi Passion Fruit'], 'liquid', 'images/liquid-vapen-10ml.png')">
-            <div class="product-img-wrapper"><img src="images/liquid-vapen-10ml.png" alt="Liquid Vapen 10ml" class="product-img"></div>
+        <div class="card" data-category="liquids" data-search="liquid vapen 10ml watermelon ice blueberry pomegranate kiwi passion fruit" onclick="openProductModal('Liquid Vapen 10ml', 17.99, 'Oficjalna sól nikotynowa o zbalansowanym hicie w gardło i wyrazistym aromacie.', ['Watermelon Ice', 'Blueberry Pomegranate', 'Kiwi Passion Fruit'], 'liquid', 'images/liquid-vapen-10ml.png')">
+            <div class="product-img-wrapper"><img src="images/liquid-vapen-10ml.png" alt="Liquid Vapen 10ml" class="product-img"><button type="button" class="favorite-toggle" aria-label="Dodaj do ulubionych" aria-pressed="false" onclick="toggleFavorite(event, this)">♡</button></div>
             <div><div class="product-title">Liquid Vapen 10ml</div><p class="desc">Znakomite odwzorowanie smaku i idealne nasycenie. Klasyka podów.</p></div>
             <div><div class="price">17.99 PLN</div><button class="btn-view">Wybierz smak</button></div>
         </div>
         <!-- PRODUKT 2 -->
-        <div class="card" data-category="devices" onclick="openProductModal('Fumot Digital Box 25k', 55.99, 'Urządzenie z inteligentnym wyświetlaczem LED poziomu płynu oraz baterii.', ['Blue Razz Cherry', 'Strawberry Watermelon', 'Juicy Peach Ice'], 'device', 'images/fumot-digital-box.png')">
-            <div class="product-img-wrapper"><img src="images/fumot-digital-box.png" alt="Fumot Digital Box 25k" class="product-img"></div>
+        <div class="card" data-category="devices" data-search="fumot digital box 25k blue razz cherry strawberry watermelon juicy peach ice" onclick="openProductModal('Fumot Digital Box 25k', 55.99, 'Urządzenie z inteligentnym wyświetlaczem LED poziomu płynu oraz baterii.', ['Blue Razz Cherry', 'Strawberry Watermelon', 'Juicy Peach Ice'], 'device', 'images/fumot-digital-box.png')">
+            <div class="product-img-wrapper"><img src="images/fumot-digital-box.png" alt="Fumot Digital Box 25k" class="product-img"><button type="button" class="favorite-toggle" aria-label="Dodaj do ulubionych" aria-pressed="false" onclick="toggleFavorite(event, this)">♡</button></div>
             <div><div class="product-title">Fumot 25k</div><p class="desc">Aż do 25 000 zaciągnięć. Cyfrowy podgląd stanu liquidu na żywo.</p></div>
             <div><div class="price">55.99 PLN</div><button class="btn-view">Wybierz wariant</button></div>
         </div>
         <!-- PRODUKT 3 -->
-        <div class="card" data-category="liquids" onclick="openProductModal('Merrymi Liquid 30ml', 49.00, 'Wydajny liquid premium o większej pojemności i głębokim profilu smakowym.', ['Mamba Black', 'Bubblegum Burst', 'Sweet Candy'], 'liquid', 'images/liquid-merrymi-30ml.png')">
-            <div class="product-img-wrapper"><img src="images/liquid-merrymi-30ml.png" alt="Merrymi Liquid 30ml" class="product-img"></div>
+        <div class="card" data-category="liquids" data-search="merrymi liquid 30ml mamba black bubblegum burst sweet candy" onclick="openProductModal('Merrymi Liquid 30ml', 49.00, 'Wydajny liquid premium o większej pojemności i głębokim profilu smakowym.', ['Mamba Black', 'Bubblegum Burst', 'Sweet Candy'], 'liquid', 'images/liquid-merrymi-30ml.png')">
+            <div class="product-img-wrapper"><img src="images/liquid-merrymi-30ml.png" alt="Merrymi Liquid 30ml" class="product-img"><button type="button" class="favorite-toggle" aria-label="Dodaj do ulubionych" aria-pressed="false" onclick="toggleFavorite(event, this)">♡</button></div>
             <div><div class="product-title">Merrymi Liquid 30ml</div><p class="desc">Pojemność 30ml w klasie premium. Najlepszy wybór do intensywnego wapowania.</p></div>
             <div><div class="price">49.00 PLN</div><button class="btn-view">Wybierz smak</button></div>
         </div>
         <!-- PRODUKT 4 -->
-        <div class="card" data-category="liquids" onclick="openProductModal('WGA Crystal Liquid 10ml', 18.89, 'Sól nikotynowa o idealnej czystości chemicznej w krystalicznym opakowaniu.', ['Lemon Lime', 'Cherry Ice', 'Gummy Bear'], 'liquid', 'images/wga-liquid-10ml.png')">
-            <div class="product-img-wrapper"><img src="images/wga-liquid-10ml.png" alt="WGA Liquid 10ml" class="product-img"></div>
+        <div class="card" data-category="liquids" data-search="wga crystal liquid 10ml lemon lime cherry ice gummy bear" onclick="openProductModal('WGA Crystal Liquid 10ml', 18.89, 'Sól nikotynowa o idealnej czystości chemicznej w krystalicznym opakowaniu.', ['Lemon Lime', 'Cherry Ice', 'Gummy Bear'], 'liquid', 'images/wga-liquid-10ml.png')">
+            <div class="product-img-wrapper"><img src="images/wga-liquid-10ml.png" alt="WGA Liquid 10ml" class="product-img"><button type="button" class="favorite-toggle" aria-label="Dodaj do ulubionych" aria-pressed="false" onclick="toggleFavorite(event, this)">♡</button></div>
             <div><div class="product-title">WGA Liquid 10ml</div><p class="desc">Krystalicznie czysty, głęboki aromat. Gwarantuje brak przypaleń.</p></div>
             <div><div class="price">18.89 PLN</div><button class="btn-view">Wybierz smak</button></div>
         </div>
         <!-- PRODUKT 5 -->
-        <div class="card" data-category="devices" onclick="openProductModal('Bang King 100k', 79.99, 'Monstrualne urządzenie z regulacją przepływu powietrza.', ['Strawberry Mango', 'Watermelon Ice', 'Love 66'], 'device', 'images/bang-king-100k.png')">
-            <div class="product-img-wrapper"><img src="images/bang-king-100k.png" alt="Bang King 100k" class="product-img"></div>
+        <div class="card" data-category="devices" data-search="bang king 100k strawberry mango watermelon ice love 66" onclick="openProductModal('Bang King 100k', 79.99, 'Monstrualne urządzenie z regulacją przepływu powietrza.', ['Strawberry Mango', 'Watermelon Ice', 'Love 66'], 'device', 'images/bang-king-100k.png')">
+            <div class="product-img-wrapper"><img src="images/bang-king-100k.png" alt="Bang King 100k" class="product-img"><button type="button" class="favorite-toggle" aria-label="Dodaj do ulubionych" aria-pressed="false" onclick="toggleFavorite(event, this)">♡</button></div>
             <div><div class="product-title">Bang King 100k</div><p class="desc">Ekstremalnie długa żywotność i maksymalna moc dla wymagających.</p></div>
             <div><div class="price">79.99 PLN</div><button class="btn-view">Wybierz wariant</button></div>
         </div>
         <!-- PRODUKT 6 -->
-        <div class="card" data-category="devices" onclick="openProductModal('WGA Crystal 35k', 60.00, 'Krystaliczne wykończenie z najnowszą technologią mesh coil.', ['Pineapple Coconut', 'Hubba Bubba', 'Fizzy Cherry'], 'device', 'images/wga-35k.png')">
-            <div class="product-img-wrapper"><img src="images/wga-35k.png" alt="WGA Crystal 35k" class="product-img"></div>
+        <div class="card" data-category="devices" data-search="wga crystal 35k pineapple coconut hubba bubba fizzy cherry" onclick="openProductModal('WGA Crystal 35k', 60.00, 'Krystaliczne wykończenie z najnowszą technologią mesh coil.', ['Pineapple Coconut', 'Hubba Bubba', 'Fizzy Cherry'], 'device', 'images/wga-35k.png')">
+            <div class="product-img-wrapper"><img src="images/wga-35k.png" alt="WGA Crystal 35k" class="product-img"><button type="button" class="favorite-toggle" aria-label="Dodaj do ulubionych" aria-pressed="false" onclick="toggleFavorite(event, this)">♡</button></div>
             <div><div class="product-title">WGA 35k</div><p class="desc">Do 35 000 puffs. Nowoczesna grzałka mesh dająca głęboki smak.</p></div>
             <div><div class="price">60.00 PLN</div><button class="btn-view">Wybierz smak</button></div>
         </div>
     </div>
+    <p class="empty-results" id="empty-results" hidden>Brak produktów spełniających wybrane kryteria.</p>
     <section class="delivery-strip" id="delivery" aria-label="Informacje o dostawie">
         <div><span class="delivery-symbol">01</span><span><strong>Darmowa dostawa</strong><small>od 100 zł w koszyku</small></span></div>
         <div><span class="delivery-symbol">02</span><span><strong>Wygodny odbiór</strong><small>wybierz paczkomat przy zamówieniu</small></span></div>
@@ -307,7 +330,25 @@
     </div>
 
     <script>
-        let cart = []; let totalPrice = 0;
+        const CART_STORAGE_KEY = 'vapelab-cart';
+        const FAVORITES_STORAGE_KEY = 'vapelab-favorites';
+        function readLocalList(key) {
+            try {
+                const value = JSON.parse(localStorage.getItem(key) || '[]');
+                return Array.isArray(value) ? value : [];
+            } catch (error) {
+                return [];
+            }
+        }
+        function writeLocalList(key, value) {
+            try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) {}
+        }
+        let cart = readLocalList(CART_STORAGE_KEY).filter(item => item && typeof item.name === 'string' && typeof item.variant === 'string' && Number.isFinite(item.price));
+        let favorites = new Set(readLocalList(FAVORITES_STORAGE_KEY).filter(name => typeof name === 'string'));
+        let selectedCategory = 'all';
+        let favoritesOnly = false;
+        const featuredProductOrder = new Map([...document.querySelectorAll('.shop-section > .card')].map((card, index) => [card, index]));
+        let totalPrice = 0;
         const ORDER_API_URL = '';
         let currentAccount = null;
         const icons = {
@@ -468,8 +509,8 @@
 
         function closeProductModal() { document.getElementById('product-modal').style.display = 'none'; }
         function closeProductModalOutside(e) { if(e.target.id === 'product-modal') closeProductModal(); }
-        function addToCart(name, price, variant) { cart.push({ name, price, variant }); updateCart(); const t = document.querySelector('.cart-toggle'); t.style.transform = 'scale(1.1)'; setTimeout(() => t.style.transform = 'scale(1)', 150); }
-        function removeFromCart(index) { cart.splice(index, 1); updateCart(); }
+        function addToCart(name, price, variant) { cart.push({ name, price, variant }); writeLocalList(CART_STORAGE_KEY, cart); updateCart(); const t = document.querySelector('.cart-toggle'); t.style.transform = 'scale(1.1)'; setTimeout(() => t.style.transform = 'scale(1)', 150); }
+        function removeFromCart(index) { cart.splice(index, 1); writeLocalList(CART_STORAGE_KEY, cart); updateCart(); }
 
         function updateCart() {
             const countBadge = document.getElementById('cart-count'); const itemsContainer = document.getElementById('cart-items-container');
@@ -492,7 +533,78 @@
             document.getElementById('checkout-modal').style.display = 'flex';
         }
         function closeCheckoutModal() { document.getElementById('checkout-modal').style.display = 'none'; }
-        function filterCategory(category, button) { document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); document.querySelectorAll('.card').forEach(card => { card.style.display = (category === 'all' || card.getAttribute('data-category') === category) ? 'flex' : 'none'; }); }
+        function filterCategory(category, button) {
+            selectedCategory = category;
+            document.querySelectorAll('.category-btn').forEach(categoryButton => categoryButton.classList.remove('active'));
+            button.classList.add('active');
+            applyProductFilters();
+        }
+
+        function applyProductFilters() {
+            const query = document.getElementById('product-search').value.trim().toLocaleLowerCase('pl-PL');
+            const sortMode = document.getElementById('product-sort').value;
+            const shop = document.querySelector('.shop-section');
+            const cards = [...shop.querySelectorAll(':scope > .card')];
+            const sortedCards = [...shop.querySelectorAll(':scope > .card')];
+            if (sortMode === 'price-asc' || sortMode === 'price-desc') {
+                sortedCards.sort((first, second) => {
+                const firstPrice = Number.parseFloat(first.querySelector('.price').innerText);
+                const secondPrice = Number.parseFloat(second.querySelector('.price').innerText);
+                    return sortMode === 'price-asc' ? firstPrice - secondPrice : secondPrice - firstPrice;
+                });
+            } else if (sortMode === 'name') {
+                sortedCards.sort((first, second) => first.querySelector('.product-title').innerText.localeCompare(second.querySelector('.product-title').innerText, 'pl'));
+            } else {
+                sortedCards.sort((first, second) => featuredProductOrder.get(first) - featuredProductOrder.get(second));
+            }
+            sortedCards.forEach(card => shop.append(card));
+
+            let visibleCount = 0;
+            sortedCards.forEach(card => {
+                const productName = card.querySelector('.product-title').innerText.trim();
+                const searchableText = `${card.innerText} ${card.dataset.search || ''}`.toLocaleLowerCase('pl-PL');
+                const matchesCategory = selectedCategory === 'all' || card.dataset.category === selectedCategory;
+                const matchesSearch = !query || searchableText.includes(query);
+                const matchesFavorites = !favoritesOnly || favorites.has(productName);
+                const visible = matchesCategory && matchesSearch && matchesFavorites;
+                card.style.display = visible ? 'flex' : 'none';
+                if (visible) visibleCount += 1;
+            });
+
+            document.getElementById('product-result-count').innerText = `${visibleCount} ${visibleCount === 1 ? 'produkt' : 'produktów'}`;
+            document.getElementById('empty-results').hidden = visibleCount > 0;
+        }
+
+        function updateFavoriteButtons() {
+            document.querySelectorAll('.favorite-toggle').forEach(button => {
+                const productName = button.closest('.card').querySelector('.product-title').innerText.trim();
+                const isFavorite = favorites.has(productName);
+                button.classList.toggle('active', isFavorite);
+                button.setAttribute('aria-pressed', String(isFavorite));
+                button.setAttribute('aria-label', isFavorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych');
+                button.innerText = isFavorite ? '♥' : '♡';
+            });
+            const filterButton = document.getElementById('favorites-filter');
+            filterButton.innerText = `${favoritesOnly ? '★' : '☆'} Ulubione (${favorites.size})`;
+            filterButton.classList.toggle('active', favoritesOnly);
+            filterButton.setAttribute('aria-pressed', String(favoritesOnly));
+        }
+
+        function toggleFavorite(event, button) {
+            event.stopPropagation();
+            const productName = button.closest('.card').querySelector('.product-title').innerText.trim();
+            if (favorites.has(productName)) favorites.delete(productName);
+            else favorites.add(productName);
+            writeLocalList(FAVORITES_STORAGE_KEY, [...favorites]);
+            updateFavoriteButtons();
+            applyProductFilters();
+        }
+
+        function toggleFavoritesFilter() {
+            favoritesOnly = !favoritesOnly;
+            updateFavoriteButtons();
+            applyProductFilters();
+        }
 
         async function submitOrder() {
             const button = document.getElementById('submit-order-btn');
@@ -523,6 +635,7 @@
                 document.getElementById('checkout-form').style.display = 'none';
                 document.getElementById('order-result').style.display = 'block';
                 cart = [];
+                writeLocalList(CART_STORAGE_KEY, cart);
                 updateCart();
                 if (currentAccount) loadAccountOrders();
             } catch (error) {
@@ -542,6 +655,9 @@
             }
         }
         initializeAccount();
+        updateCart();
+        updateFavoriteButtons();
+        applyProductFilters();
     </script>
 </body>
 </html>
