@@ -1,0 +1,13 @@
+{
+  "name": "vapelab-orders",
+  "version": "1.0.0",
+  "private": true,
+  "description": "VapeLab store order codes and Discord bot",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.21.0",
+    "dotenv": "^16.4.7"
+  }
+}

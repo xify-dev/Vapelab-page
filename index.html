@@ -151,11 +151,21 @@
     <div class="modal" id="checkout-modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeCheckoutModal()">✕</button>
-            <div class="modal-header">Dane do wysyłki</div>
-            <p class="modal-desc">Podaj tylko e-mail oraz telefon, aby sfinalizować zamówienie w ticketach.</p>
-            <div class="form-group"><label>Adres E-mail</label><input type="email" id="customer-email" class="form-input" placeholder="np. nazwa@gmail.com" required></div>
-            <div class="form-group"><label>Numer Telefonu</label><input type="tel" id="customer-phone" class="form-input" placeholder="np. 123456789" required></div>
-            <button class="btn-checkout" onclick="submitOrder()">Złóż zamówienie na Discordzie</button>
+            <div class="modal-header" id="checkout-title">Złóż zamówienie</div>
+            <p class="modal-desc" id="checkout-description">Uzupełnij dane, aby zapisać zamówienie i otrzymać kod do utworzenia ticketa na Discordzie.</p>
+            <div id="checkout-form">
+                <div class="form-group"><label>Numer telefonu</label><input type="tel" id="customer-phone" class="form-input" placeholder="np. 123456789" maxlength="20" required></div>
+                <div class="form-group"><label>Numer paczkomatu</label><input type="text" id="parcel-locker" class="form-input" placeholder="np. WAW01A" maxlength="20" required></div>
+                <div class="form-group"><label>Metoda płatności</label><select id="payment-method" class="form-select"><option value="BLIK">BLIK</option><option value="Przelew bankowy">Przelew bankowy</option><option value="Pobranie">Pobranie</option></select></div>
+                <button class="btn-checkout" id="submit-order-btn" onclick="submitOrder()">Potwierdź zamówienie</button>
+            </div>
+            <div id="order-result" style="display:none; text-align:center;">
+                <p class="modal-desc">Kod zamówienia</p>
+                <strong id="order-code" style="display:block; font-size:1.4em; color:var(--accent); margin:16px 0;"></strong>
+                <button class="btn-checkout" type="button" onclick="copyOrderCode()">Kopiuj kod</button>
+                <p class="modal-desc" style="margin-top:18px;">Na Discordzie użyj komendy <strong>/kodzamowienia</strong> i wpisz kod w polu <strong>kod</strong>.</p>
+                <button class="btn-view" type="button" onclick="closeCheckoutModal()">Zamknij</button>
+            </div>
         </div>
     </div>
 
@@ -193,18 +203,56 @@
             else { let missing = 100 - totalPrice; trackerText.innerHTML = `Brakuje Ci <strong>${missing.toFixed(2)} PLN</strong> do darmowej dostawy.`; progressBar.style.width = (totalPrice) + "%"; topBar.innerText = `🚚 Do darmowej dostawy brakuje jeszcze tylko ${missing.toFixed(2)} PLN!`; }
         }
         function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('open'); }
-        function openCheckoutModal() { if(cart.length===0){alert("Koszyk jest pusty!");return;} document.getElementById('checkout-modal').style.display = 'flex'; }
+        function openCheckoutModal() {
+            if (cart.length === 0) { alert("Koszyk jest pusty!"); return; }
+            document.getElementById('checkout-title').innerText = 'Złóż zamówienie';
+            document.getElementById('checkout-description').innerText = 'Uzupełnij dane, aby zapisać zamówienie i otrzymać kod do utworzenia ticketa na Discordzie.';
+            document.getElementById('checkout-form').style.display = 'block';
+            document.getElementById('order-result').style.display = 'none';
+            document.getElementById('checkout-modal').style.display = 'flex';
+        }
         function closeCheckoutModal() { document.getElementById('checkout-modal').style.display = 'none'; }
         function filterCategory(category, button) { document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); document.querySelectorAll('.card').forEach(card => { card.style.display = (category === 'all' || card.getAttribute('data-category') === category) ? 'flex' : 'none'; }); }
 
-        function submitOrder() {
-            const email = document.getElementById('customer-email').value.trim(); const phone = document.getElementById('customer-phone').value.trim();
-            if(!email || !phone){ alert("Proszę uzupełnić dane!"); return; }
-            let summary = "ZAMÓWIENIE VAPELAB:\\n";
-            cart.forEach(item => { summary += `- ${item.name} [${item.variant}] (${item.price.toFixed(2)} PLN)\\n`; });
-            summary += `Suma: ${totalPrice.toFixed(2)} PLN\\nWysyłka: ${(totalPrice >= 100 ? "Darmowa" : "Standardowa")}\\nKontakt: ${email} | Tel: ${phone}\\n`;
-            alert("ZAMÓWIENIE PRZYGOTOWANE!\\n\\nSkopiuj podsumowanie z następnego okna i wklej je na Discordzie.");
-            alert(summary); window.open("https://discord.gg", "_blank"); closeCheckoutModal();
+        async function submitOrder() {
+            const button = document.getElementById('submit-order-btn');
+            const phone = document.getElementById('customer-phone').value.trim();
+            const parcelLocker = document.getElementById('parcel-locker').value.trim().toUpperCase();
+            const paymentMethod = document.getElementById('payment-method').value;
+            if (!phone || !parcelLocker) { alert('Wpisz numer telefonu i numer paczkomatu.'); return; }
+            button.disabled = true;
+            button.innerText = 'Zapisywanie zamówienia...';
+            try {
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items: cart.map(item => ({ name: item.name, variant: item.variant })), phone, parcelLocker, paymentMethod })
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || 'Nie udało się zapisać zamówienia.');
+
+                document.getElementById('order-code').innerText = result.code;
+                document.getElementById('checkout-title').innerText = 'Zamówienie zapisane';
+                document.getElementById('checkout-description').innerText = `Do zapłaty: ${result.total.toFixed(2)} PLN. Użyj kodu do utworzenia ticketa.`;
+                document.getElementById('checkout-form').style.display = 'none';
+                document.getElementById('order-result').style.display = 'block';
+                cart = [];
+                updateCart();
+            } catch (error) {
+                alert(`${error.message} Otwórz sklep przez serwer (npm start), nie bezpośrednio z pliku HTML.`);
+            } finally {
+                button.disabled = false;
+                button.innerText = 'Potwierdź zamówienie';
+            }
+        }
+        async function copyOrderCode() {
+            const code = document.getElementById('order-code').innerText;
+            try {
+                await navigator.clipboard.writeText(code);
+                document.querySelector('#order-result .btn-checkout').innerText = 'Skopiowano';
+            } catch (error) {
+                alert(`Kod zamówienia: ${code}`);
+            }
         }
     </script>
 </body>
