@@ -3,15 +3,20 @@ require('dotenv').config();
 const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
-const { randomBytes } = require('node:crypto');
+const { createHash, randomBytes, scrypt: scryptCallback, timingSafeEqual } = require('node:crypto');
+const { promisify } = require('node:util');
 const { Client, Events, GatewayIntentBits, REST, Routes, SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
 
+const scrypt = promisify(scryptCallback);
 const root = __dirname;
-const dataDirectory = path.join(root, 'data');
+const dataDirectory = process.env.DATA_DIRECTORY ? path.resolve(process.env.DATA_DIRECTORY) : path.join(root, 'data');
 const ordersFile = path.join(dataDirectory, 'orders.json');
+const accountsFile = path.join(dataDirectory, 'accounts.json');
 const port = Number(process.env.PORT) || 3000;
 const maxRequestBytes = 16 * 1024;
+const sessionMaxAgeSeconds = 60 * 60 * 24 * 7;
 const requestBuckets = new Map();
+const sessions = new Map();
 const paymentMethods = ['BLIK', 'Przelew bankowy', 'Pobranie'];
 
 const catalog = {
@@ -35,19 +40,75 @@ if (fs.existsSync(ordersFile)) {
     }
 }
 
+let accounts = new Map();
+if (fs.existsSync(accountsFile)) {
+    try {
+        const savedAccounts = JSON.parse(fs.readFileSync(accountsFile, 'utf8'));
+        accounts = new Map(savedAccounts.map(account => [account.email, account]));
+    } catch (error) {
+        console.error('Nie można odczytać data/accounts.json:', error.message);
+        process.exit(1);
+    }
+}
+
 function saveOrders() {
     const temporaryFile = `${ordersFile}.tmp`;
     fs.writeFileSync(temporaryFile, JSON.stringify([...orders.values()], null, 2));
     fs.renameSync(temporaryFile, ordersFile);
 }
 
-function sendJson(response, statusCode, payload) {
+function saveAccounts() {
+    const temporaryFile = `${accountsFile}.tmp`;
+    fs.writeFileSync(temporaryFile, JSON.stringify([...accounts.values()], null, 2));
+    fs.renameSync(temporaryFile, accountsFile);
+}
+
+function sendJson(response, statusCode, payload, extraHeaders = {}) {
     response.writeHead(statusCode, {
         'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'no-store',
-        'X-Content-Type-Options': 'nosniff'
+        'X-Content-Type-Options': 'nosniff',
+        ...extraHeaders
     });
     response.end(JSON.stringify(payload));
+}
+
+function publicAccount(account) {
+    return { id: account.id, name: account.name, email: account.email, createdAt: account.createdAt };
+}
+
+function getCookieValue(request, name) {
+    const prefix = `${name}=`;
+    const cookie = (request.headers.cookie || '').split(';').map(value => value.trim()).find(value => value.startsWith(prefix));
+    return cookie ? cookie.slice(prefix.length) : '';
+}
+
+function getSessionAccount(request) {
+    const token = getCookieValue(request, 'vapelab_session');
+    if (!token) return null;
+
+    const sessionKey = createHash('sha256').update(token).digest('hex');
+    const session = sessions.get(sessionKey);
+    if (!session) return null;
+    if (session.expiresAt <= Date.now()) {
+        sessions.delete(sessionKey);
+        return null;
+    }
+
+    return [...accounts.values()].find(account => account.id === session.accountId) || null;
+}
+
+function setSessionCookie(request, token, maxAge) {
+    const forwardedProto = (request.headers['x-forwarded-proto'] || '').split(',')[0].trim();
+    const secure = request.socket.encrypted || forwardedProto === 'https';
+    return `vapelab_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure ? '; Secure' : ''}`;
+}
+
+function createSession(account) {
+    const token = randomBytes(32).toString('base64url');
+    const sessionKey = createHash('sha256').update(token).digest('hex');
+    sessions.set(sessionKey, { accountId: account.id, expiresAt: Date.now() + sessionMaxAgeSeconds * 1000 });
+    return token;
 }
 
 function readJsonBody(request) {
@@ -81,6 +142,114 @@ function isRateLimited(request) {
     }
     bucket.count += 1;
     return bucket.count > 10;
+}
+
+async function registerAccount(request, response) {
+    if (isRateLimited(request)) {
+        sendJson(response, 429, { error: 'Zbyt wiele prób. Spróbuj ponownie za chwilę.' });
+        return;
+    }
+
+    let body;
+    try {
+        body = await readJsonBody(request);
+    } catch (error) {
+        sendJson(response, 400, { error: error.message });
+        return;
+    }
+
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+        sendJson(response, 400, { error: 'Podaj prawidłowe dane konta.' });
+        return;
+    }
+
+    const name = typeof body.name === 'string' ? body.name.trim() : '';
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const password = typeof body.password === 'string' ? body.password : '';
+    if (name.length < 2 || name.length > 60 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
+        sendJson(response, 400, { error: 'Podaj prawidłowe imię i adres e-mail.' });
+        return;
+    }
+    if (password.length < 10 || password.length > 128) {
+        sendJson(response, 400, { error: 'Hasło musi mieć od 10 do 128 znaków.' });
+        return;
+    }
+    if (body.adultConfirmed !== true) {
+        sendJson(response, 400, { error: 'Potwierdź, że masz ukończone 18 lat.' });
+        return;
+    }
+    if (accounts.has(email)) {
+        sendJson(response, 409, { error: 'Konto z tym adresem e-mail już istnieje.' });
+        return;
+    }
+
+    const salt = randomBytes(16).toString('hex');
+    const passwordHash = (await scrypt(password, Buffer.from(salt, 'hex'), 64)).toString('hex');
+    const account = {
+        id: randomBytes(16).toString('hex'),
+        name,
+        email,
+        salt,
+        passwordHash,
+        adultConfirmedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString()
+    };
+    accounts.set(email, account);
+    try {
+        saveAccounts();
+    } catch (error) {
+        accounts.delete(email);
+        console.error('Nie można zapisać konta:', error);
+        sendJson(response, 500, { error: 'Nie udało się utworzyć konta.' });
+        return;
+    }
+
+    const token = createSession(account);
+    sendJson(response, 201, { account: publicAccount(account) }, {
+        'Set-Cookie': setSessionCookie(request, token, sessionMaxAgeSeconds)
+    });
+}
+
+async function loginAccount(request, response) {
+    if (isRateLimited(request)) {
+        sendJson(response, 429, { error: 'Zbyt wiele prób. Spróbuj ponownie za chwilę.' });
+        return;
+    }
+
+    let body;
+    try {
+        body = await readJsonBody(request);
+    } catch (error) {
+        sendJson(response, 400, { error: error.message });
+        return;
+    }
+
+    const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const password = typeof body?.password === 'string' ? body.password : '';
+    if (!email || password.length < 1 || password.length > 128) {
+        sendJson(response, 400, { error: 'Podaj adres e-mail i hasło.' });
+        return;
+    }
+
+    const account = accounts.get(email);
+    const salt = Buffer.from(account?.salt || '00000000000000000000000000000000', 'hex');
+    const actualHash = await scrypt(password, salt, 64);
+    const expectedHash = Buffer.from(account?.passwordHash || '0'.repeat(128), 'hex');
+    if (!timingSafeEqual(actualHash, expectedHash) || !account) {
+        sendJson(response, 401, { error: 'Nieprawidłowy adres e-mail lub hasło.' });
+        return;
+    }
+
+    const token = createSession(account);
+    sendJson(response, 200, { account: publicAccount(account) }, {
+        'Set-Cookie': setSessionCookie(request, token, sessionMaxAgeSeconds)
+    });
+}
+
+function logoutAccount(request, response) {
+    const token = getCookieValue(request, 'vapelab_session');
+    if (token) sessions.delete(createHash('sha256').update(token).digest('hex'));
+    sendJson(response, 200, { ok: true }, { 'Set-Cookie': setSessionCookie(request, '', 0) });
 }
 
 async function createOrder(request, response) {
@@ -138,6 +307,7 @@ async function createOrder(request, response) {
         phone: body.phone.trim(),
         parcelLocker: body.parcelLocker.trim().toUpperCase(),
         paymentMethod: body.paymentMethod,
+        accountId: getSessionAccount(request)?.id || null,
         createdAt: new Date().toISOString()
     };
     orders.set(code, order);
@@ -154,26 +324,55 @@ async function createOrder(request, response) {
 }
 
 function serveFile(request, response, pathname) {
-    if (pathname !== '/' && pathname !== '/index.html') {
+    let relativePath;
+    try {
+        relativePath = decodeURIComponent(pathname).replace(/^\/+/, '') || 'index.html';
+    } catch (error) {
+        response.writeHead(400);
+        response.end('Bad request');
+        return;
+    }
+
+    const filePath = path.resolve(root, relativePath);
+    const indexPath = path.join(root, 'index.html');
+    const imagesDirectory = path.join(root, 'images');
+    if (filePath !== indexPath && !filePath.startsWith(`${imagesDirectory}${path.sep}`)) {
         response.writeHead(404);
         response.end('Not found');
         return;
     }
 
-    const filePath = path.join(root, 'index.html');
     fs.readFile(filePath, (error, content) => {
         if (error) {
             response.writeHead(error.code === 'ENOENT' ? 404 : 500);
             response.end('Not found');
             return;
         }
-        const contentType = filePath.endsWith('.html') ? 'text/html; charset=utf-8' : 'application/octet-stream';
-        response.writeHead(200, { 'Content-Type': contentType, 'X-Content-Type-Options': 'nosniff' });
+        const contentTypes = {
+            '.html': 'text/html; charset=utf-8',
+            '.png': 'image/png',
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.webp': 'image/webp',
+            '.avif': 'image/avif',
+            '.svg': 'image/svg+xml'
+        };
+        const contentType = contentTypes[path.extname(filePath).toLowerCase()] || 'application/octet-stream';
+        response.writeHead(200, {
+            'Content-Type': contentType,
+            'X-Content-Type-Options': 'nosniff',
+            'Cache-Control': relativePath === 'index.html' ? 'no-cache' : 'public, max-age=86400'
+        });
         response.end(content);
     });
 }
 
 const server = http.createServer((request, response) => {
+    if (request.method === 'OPTIONS') {
+        response.writeHead(204);
+        response.end();
+        return;
+    }
     let pathname;
     try {
         pathname = new URL(request.url, 'http://localhost').pathname;
@@ -182,6 +381,42 @@ const server = http.createServer((request, response) => {
         return;
     }
 
+    if (request.method === 'GET' && pathname === '/api/account/me') {
+        const account = getSessionAccount(request);
+        sendJson(response, 200, { account: account ? publicAccount(account) : null });
+        return;
+    }
+    if (request.method === 'GET' && pathname === '/api/account/orders') {
+        const account = getSessionAccount(request);
+        if (!account) {
+            sendJson(response, 401, { error: 'Zaloguj się, aby zobaczyć swoje zamówienia.' });
+            return;
+        }
+        const accountOrders = [...orders.values()]
+            .filter(order => order.accountId === account.id)
+            .sort((first, second) => second.createdAt.localeCompare(first.createdAt))
+            .map(({ code, items, total, shipping, createdAt }) => ({ code, items, total, shipping, createdAt }));
+        sendJson(response, 200, { orders: accountOrders });
+        return;
+    }
+    if (request.method === 'POST' && pathname === '/api/account/register') {
+        registerAccount(request, response).catch(error => {
+            console.error('Błąd rejestracji:', error);
+            if (!response.headersSent) sendJson(response, 500, { error: 'Wystąpił błąd serwera.' });
+        });
+        return;
+    }
+    if (request.method === 'POST' && pathname === '/api/account/login') {
+        loginAccount(request, response).catch(error => {
+            console.error('Błąd logowania:', error);
+            if (!response.headersSent) sendJson(response, 500, { error: 'Wystąpił błąd serwera.' });
+        });
+        return;
+    }
+    if (request.method === 'POST' && pathname === '/api/account/logout') {
+        logoutAccount(request, response);
+        return;
+    }
     if (request.method === 'POST' && pathname === '/api/orders') {
         createOrder(request, response).catch(error => {
             console.error('Błąd API zamówień:', error);
@@ -209,6 +444,11 @@ const server = http.createServer((request, response) => {
 server.listen(port, () => console.log(`VapeLab działa: http://localhost:${port}`));
 
 async function startDiscordBot() {
+    if (process.env.DISCORD_BOT_DISABLED === 'true') {
+        console.log('Bot Discord wyłączony przez DISCORD_BOT_DISABLED.');
+        return;
+    }
+
     const { DISCORD_TOKEN: token, DISCORD_CLIENT_ID: clientId, DISCORD_GUILD_ID: guildId } = process.env;
     if (!token || !clientId) {
         console.warn('Bot Discord wyłączony: ustaw DISCORD_TOKEN i DISCORD_CLIENT_ID w pliku .env.');

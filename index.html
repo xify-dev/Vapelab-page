@@ -6,21 +6,21 @@
     <title>VapeLab | Official Store</title>
     <style>
         :root {
-            --primary: #a855f7;
-            --primary-hover: #9333ea;
-            --accent: #2ecc71;
-            --bg-dark: #0b0b0f;
-            --bg-card: #13131a;
-            --text-main: #ffffff;
-            --text-muted: #94a3b8;
-            --danger: #ef4444;
+            --primary: #b7e646;
+            --primary-hover: #a2cf34;
+            --accent: #65d7b0;
+            --bg-dark: #0c1110;
+            --bg-card: #151b19;
+            --text-main: #f2f4ec;
+            --text-muted: #9ba8a0;
+            --danger: #ff655f;
         }
         body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
         
         .top-bar { background-color: #1e1b4b; color: #c084fc; text-align: center; padding: 12px 10px; font-weight: 600; font-size: 0.9em; border-bottom: 1px solid #3b0764; }
         .header { padding: 50px 20px; background: radial-gradient(circle at top, #2e1065 0%, var(--bg-dark) 70%); text-align: center; }
-        .banner { max-width: 550px; width: 100%; height: auto; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); margin-bottom: 25px; }
-        h1 { font-size: 3.2em; color: #ffffff; margin: 10px 0; font-weight: 800; letter-spacing: 2px; }
+        .banner { max-width: 100%; max-height: 260px; width: auto; height: auto; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); margin-bottom: 25px; }
+        h1 { font-size: 3.2em; color: #ffffff; margin: 10px 0; font-weight: 800; letter-spacing: 0; }
         h1 span { color: var(--primary); text-shadow: 0 0 20px rgba(147, 51, 234, 0.4); }
         
         .delivery-tracker { background-color: var(--bg-card); max-width: 480px; margin: 25px auto 0 auto; padding: 15px 25px; border-radius: 16px; border: 1px solid #1e1e2f; text-align: center; }
@@ -70,20 +70,119 @@
         .modal-desc { color: var(--text-muted); font-size: 0.92em; line-height: 1.5; margin-bottom: 20px; text-align: center; }
         .modal-img-wrapper { width: 100%; height: 160px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
         .svg-icon { width: 120px; height: 120px; fill: var(--primary); filter: drop-shadow(0 0 10px rgba(168,85,247,0.5)); }
+        .site-nav { max-width: 1280px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid #29332d; }
+        .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text-main); text-decoration: none; font-size: 0.9em; font-weight: 900; letter-spacing: 0; }
+        .brand small { display: block; color: var(--text-muted); font-size: 0.62em; font-weight: 600; letter-spacing: 0; }
+        .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 8px; background: var(--primary); color: #111710; font-size: 1.2em; }
+        .nav-links { display: flex; gap: 28px; margin-left: auto; margin-right: 8px; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.92em; }
+        .nav-links a:hover { color: var(--text-main); }
+        .account-trigger, .category-btn, .account-tab, .quiet-button { font: inherit; cursor: pointer; }
+        .account-trigger { min-height: 42px; padding: 0 18px; border: 1px solid var(--primary); border-radius: 8px; background: var(--primary); color: #121710; font-weight: 800; }
+        .top-bar { background: var(--primary); color: #151a12; border: 0; padding: 9px 12px; font-size: 0.78em; font-weight: 800; }
+        .header { padding: 28px 20px 42px; background: radial-gradient(ellipse at 50% 0%, rgba(155, 201, 73, 0.14), transparent 50%), linear-gradient(180deg, #111916, var(--bg-dark)); }
+        .banner { max-width: 100%; max-height: 220px; width: auto; height: auto; border-radius: 10px; box-shadow: 0 14px 34px rgba(0,0,0,0.35); margin-bottom: 14px; }
+        .hero-eyebrow, .eyebrow { margin: 0 0 8px; color: var(--primary); font-size: 0.72em; font-weight: 800; letter-spacing: 0; }
+        h1 { font-family: Impact, Bahnschrift, sans-serif; font-size: 3em; letter-spacing: 0; }
+        h1 span { color: var(--primary); text-shadow: none; }
+        .hero-copy { margin: 0; color: var(--text-muted); }
+        .delivery-tracker { margin-top: 22px; padding: 14px 20px; border-radius: 8px; border-color: #2a3530; background: rgba(21, 27, 25, 0.86); }
+        .shop-intro { max-width: 1200px; margin: 50px auto 0; padding: 0 20px; display: flex; align-items: end; justify-content: space-between; gap: 24px; }
+        .shop-intro h2 { margin: 0; font-family: Impact, Bahnschrift, sans-serif; font-size: 2.25em; font-weight: 500; }
+        .shop-intro > p { max-width: 340px; margin: 0 0 4px; color: var(--text-muted); }
+        .categories { gap: 8px; margin: 24px auto 18px; padding: 0 20px; }
+        .category-btn { border-radius: 8px; border-color: #303b34; padding: 10px 18px; }
+        .category-btn:hover, .category-btn.active { background: var(--primary); border-color: var(--primary); color: #151a12; box-shadow: none; transform: none; }
+        .shop-section { max-width: 1240px; grid-template-columns: repeat(auto-fill, minmax(245px, 1fr)); gap: 18px; }
+        .card { padding: 14px; border-radius: 8px; border-color: #29332e; }
+        .card:hover { transform: translateY(-3px); border-color: #90b838; box-shadow: 0 12px 30px rgba(0,0,0,0.25); }
+        .product-img-wrapper { height: 210px; margin-bottom: 14px; border-radius: 6px; background: #e8ece6; }
+        .product-title { font-size: 1.1em; }
+        .price { color: var(--accent); font-size: 1.35em; }
+        .desc { min-height: 4.1em; margin-bottom: 18px; }
+        .btn-view, .btn-checkout { border-radius: 8px; transition: background-color 0.18s ease, transform 0.18s ease; }
+        .btn-view { border-color: #39443d; background: #202923; }
+        .btn-view:hover { background: #2a352e; }
+        .btn-checkout { background: var(--primary); color: #151a12; }
+        .btn-checkout:hover, .account-trigger:hover { background: var(--primary-hover); }
+        .cart-toggle { width: 58px; height: 58px; border-radius: 12px; background: var(--primary); color: #151a12; box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        .cart-sidebar { background: #101613; border-color: #29332e; }
+        .modal-content { border-radius: 10px; border-color: #303b34; }
+        .form-select, .form-input { border-color: #354039; border-radius: 8px; background: #101613; }
+        .delivery-strip { max-width: 1200px; margin: -42px auto 80px; padding: 22px 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; border-top: 1px solid #29332e; border-bottom: 1px solid #29332e; }
+        .delivery-strip > div { display: flex; align-items: center; gap: 12px; }
+        .delivery-symbol { color: var(--primary); font-size: 0.78em; font-weight: 900; }
+        .delivery-strip strong, .delivery-strip small { display: block; }
+        .delivery-strip strong { font-size: 0.9em; }
+        .delivery-strip small { margin-top: 3px; color: var(--text-muted); font-size: 0.78em; }
+        .account-modal-content { max-height: 90vh; overflow-y: auto; }
+        .account-modal-content > .eyebrow { text-align: center; }
+        .account-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 0 0 22px; padding: 4px; border-radius: 8px; background: #0f1512; }
+        .account-tab { min-height: 40px; border: 0; border-radius: 6px; background: transparent; color: var(--text-muted); }
+        .account-tab.active { background: #29332d; color: var(--text-main); }
+        .account-form .form-group { margin-bottom: 14px; }
+        .account-form .btn-checkout { margin-top: 8px; }
+        .age-confirm { display: flex !important; align-items: start; gap: 9px; margin: 4px 0 16px; color: var(--text-muted) !important; line-height: 1.4; }
+        .age-confirm input { margin-top: 3px; accent-color: var(--primary); }
+        .account-message { min-height: 1.3em; margin: 12px 0 0; color: #ff9b92; font-size: 0.9em; text-align: center; }
+        .account-profile { padding: 16px; border: 1px solid #303b34; border-radius: 8px; background: #101613; }
+        .account-profile strong, .account-profile > span:last-child { display: block; }
+        .account-profile strong { margin: 8px 0 3px; font-size: 1.2em; }
+        .account-profile > span:last-child { color: var(--text-muted); font-size: 0.9em; }
+        .account-orders-heading { display: flex; align-items: center; justify-content: space-between; margin: 22px 0 10px; }
+        .account-orders-heading h3 { margin: 0; font-size: 1em; }
+        .quiet-button { border: 0; background: transparent; color: var(--primary); }
+        .account-orders-list { max-height: 260px; overflow-y: auto; margin-bottom: 16px; }
+        .account-order { padding: 12px 0; border-bottom: 1px solid #303b34; }
+        .account-order strong, .account-order span { display: block; }
+        .account-order span { margin-top: 4px; color: var(--text-muted); font-size: 0.82em; }
+        .account-empty { color: var(--text-muted); font-size: 0.9em; }
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+        @media (max-width: 680px) {
+            .site-nav { padding: 12px 16px; gap: 12px; }
+            .nav-links { gap: 14px; }
+            .account-trigger { padding: 0 12px; }
+            .header { padding: 20px 16px 32px; }
+            .banner { max-height: 180px; }
+            h1 { font-size: 2.4em; }
+            .shop-intro { margin-top: 36px; align-items: start; flex-direction: column; gap: 8px; }
+            .shop-intro h2 { font-size: 1.9em; }
+            .categories { justify-content: start; }
+            .shop-section { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; padding: 0 14px 64px; }
+            .delivery-strip { margin: -24px 14px 56px; padding: 18px 4px; grid-template-columns: 1fr; gap: 14px; }
+            .modal-content { max-width: calc(100% - 24px); padding: 28px 20px; }
+        }
+        @media (max-width: 420px) {
+            .nav-links { display: none; }
+            .shop-section { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
     <div class="top-bar" id="top-bar-text">🚚 DARMOWA DOSTAWA NA TERENIE CAŁEGO KRAJU DLA ZAMÓWIEŃ OD 100 ZŁ!</div>
 
-    <div class="header">
-        <img src="https://discordapp.net" alt="VapeLab Banner" class="banner">
+    <nav class="site-nav" aria-label="Główna nawigacja">
+        <a class="brand" href="#top"><span class="brand-mark">V</span><span>VAPELAB<small>OFFICIAL STORE</small></span></a>
+        <div class="nav-links"><a href="#products">Sklep</a><a href="#delivery">Dostawa</a></div>
+        <button type="button" class="account-trigger" id="account-trigger" onclick="openAccountModal()">Zaloguj się</button>
+    </nav>
+
+    <div class="header" id="top">
+        <img src="images/vapelab%20banner.png" alt="VapeLab Banner" class="banner">
+        <p class="hero-eyebrow">VAPE LAB / SELECTED GOODS</p>
         <h1>VapeLab <span>Store</span></h1>
+        <p class="hero-copy">Smaki, które zostają z Tobą na dłużej.</p>
         <div class="delivery-tracker">
             <div id="tracker-text" class="tracker-text">Koszyk jest pusty. Dodaj produkty, aby obliczyć dostawę.</div>
             <div class="progress-bar-bg"><div id="progress-bar" class="progress-bar-fill"></div></div>
         </div>
     </div>
+
+    <section class="shop-intro" id="products" aria-labelledby="products-title">
+        <div><p class="eyebrow">KOLEKCJA 2026</p><h2 id="products-title">Znajdź swój smak.</h2></div>
+        <p>Liquidy i urządzenia wybrane do codziennego zestawu.</p>
+    </section>
 
     <div class="categories">
         <button class="category-btn active" onclick="filterCategory('all', this)">Wszystko</button>
@@ -92,43 +191,81 @@
     </div>
         <div class="shop-section">
         <!-- PRODUKT 1 -->
-        <div class="card" data-category="liquids" onclick="openProductModal('Liquid Vapen 10ml', 17.99, 'Oficjalna sól nikotynowa o zbalansowanym hicie w gardło i wyrazistym aromacie.', ['Watermelon Ice', 'Blueberry Pomegranate', 'Kiwi Passion Fruit'], 'liquid')">
-            <div class="product-img-wrapper"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 8h-2V6c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6h6v2H9V6zm10 14H5V10h14v10z"/></svg></div>
+        <div class="card" data-category="liquids" onclick="openProductModal('Liquid Vapen 10ml', 17.99, 'Oficjalna sól nikotynowa o zbalansowanym hicie w gardło i wyrazistym aromacie.', ['Watermelon Ice', 'Blueberry Pomegranate', 'Kiwi Passion Fruit'], 'liquid', 'images/liquid-vapen-10ml.png')">
+            <div class="product-img-wrapper"><img src="images/liquid-vapen-10ml.png" alt="Liquid Vapen 10ml" class="product-img"></div>
             <div><div class="product-title">Liquid Vapen 10ml</div><p class="desc">Znakomite odwzorowanie smaku i idealne nasycenie. Klasyka podów.</p></div>
             <div><div class="price">17.99 PLN</div><button class="btn-view">Wybierz smak</button></div>
         </div>
         <!-- PRODUKT 2 -->
-        <div class="card" data-category="devices" onclick="openProductModal('Fumot Digital Box 25k', 55.99, 'Urządzenie z inteligentnym wyświetlaczem LED poziomu płynu oraz baterii.', ['Blue Razz Cherry', 'Strawberry Watermelon', 'Juicy Peach Ice'], 'device')">
-            <div class="product-img-wrapper"><svg class="svg-icon" viewBox="0 0 24 24" style="fill:var(--accent);"><path d="M16 2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H8V4h8v16zM10 7h4v2h-4zm0 4h4v2h-4z"/></svg></div>
+        <div class="card" data-category="devices" onclick="openProductModal('Fumot Digital Box 25k', 55.99, 'Urządzenie z inteligentnym wyświetlaczem LED poziomu płynu oraz baterii.', ['Blue Razz Cherry', 'Strawberry Watermelon', 'Juicy Peach Ice'], 'device', 'images/fumot-digital-box.png')">
+            <div class="product-img-wrapper"><img src="images/fumot-digital-box.png" alt="Fumot Digital Box 25k" class="product-img"></div>
             <div><div class="product-title">Fumot 25k</div><p class="desc">Aż do 25 000 zaciągnięć. Cyfrowy podgląd stanu liquidu na żywo.</p></div>
             <div><div class="price">55.99 PLN</div><button class="btn-view">Wybierz wariant</button></div>
         </div>
         <!-- PRODUKT 3 -->
-        <div class="card" data-category="liquids" onclick="openProductModal('Merrymi Liquid 30ml', 49.00, 'Wydajny liquid premium o większej pojemności i głębokim profilu smakowym.', ['Mamba Black', 'Bubblegum Burst', 'Sweet Candy'], 'liquid')">
-            <div class="product-img-wrapper"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 8h-2V6c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6h6v2H9V6zm10 14H5V10h14v10z"/></svg></div>
+        <div class="card" data-category="liquids" onclick="openProductModal('Merrymi Liquid 30ml', 49.00, 'Wydajny liquid premium o większej pojemności i głębokim profilu smakowym.', ['Mamba Black', 'Bubblegum Burst', 'Sweet Candy'], 'liquid', 'images/liquid-merrymi-30ml.png')">
+            <div class="product-img-wrapper"><img src="images/liquid-merrymi-30ml.png" alt="Merrymi Liquid 30ml" class="product-img"></div>
             <div><div class="product-title">Merrymi Liquid 30ml</div><p class="desc">Pojemność 30ml w klasie premium. Najlepszy wybór do intensywnego wapowania.</p></div>
             <div><div class="price">49.00 PLN</div><button class="btn-view">Wybierz smak</button></div>
         </div>
         <!-- PRODUKT 4 -->
-        <div class="card" data-category="liquids" onclick="openProductModal('WGA Crystal Liquid 10ml', 18.89, 'Sól nikotynowa o idealnej czystości chemicznej w krystalicznym opakowaniu.', ['Lemon Lime', 'Cherry Ice', 'Gummy Bear'], 'liquid')">
-            <div class="product-img-wrapper"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 8h-2V6c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6h6v2H9V6zm10 14H5V10h14v10z"/></svg></div>
+        <div class="card" data-category="liquids" onclick="openProductModal('WGA Crystal Liquid 10ml', 18.89, 'Sól nikotynowa o idealnej czystości chemicznej w krystalicznym opakowaniu.', ['Lemon Lime', 'Cherry Ice', 'Gummy Bear'], 'liquid', 'images/wga-liquid-10ml.png')">
+            <div class="product-img-wrapper"><img src="images/wga-liquid-10ml.png" alt="WGA Liquid 10ml" class="product-img"></div>
             <div><div class="product-title">WGA Liquid 10ml</div><p class="desc">Krystalicznie czysty, głęboki aromat. Gwarantuje brak przypaleń.</p></div>
             <div><div class="price">18.89 PLN</div><button class="btn-view">Wybierz smak</button></div>
         </div>
         <!-- PRODUKT 5 -->
-        <div class="card" data-category="devices" onclick="openProductModal('Bang King 100k', 79.99, 'Monstrualne urządzenie z regulacją przepływu powietrza.', ['Strawberry Mango', 'Watermelon Ice', 'Love 66'], 'device')">
-            <div class="product-img-wrapper"><svg class="svg-icon" viewBox="0 0 24 24" style="fill:var(--accent);"><path d="M16 2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H8V4h8v16zM10 7h4v2h-4zm0 4h4v2h-4z"/></svg></div>
+        <div class="card" data-category="devices" onclick="openProductModal('Bang King 100k', 79.99, 'Monstrualne urządzenie z regulacją przepływu powietrza.', ['Strawberry Mango', 'Watermelon Ice', 'Love 66'], 'device', 'images/bang-king-100k.png')">
+            <div class="product-img-wrapper"><img src="images/bang-king-100k.png" alt="Bang King 100k" class="product-img"></div>
             <div><div class="product-title">Bang King 100k</div><p class="desc">Ekstremalnie długa żywotność i maksymalna moc dla wymagających.</p></div>
             <div><div class="price">79.99 PLN</div><button class="btn-view">Wybierz wariant</button></div>
         </div>
         <!-- PRODUKT 6 -->
-        <div class="card" data-category="devices" onclick="openProductModal('WGA Crystal 35k', 60.00, 'Krystaliczne wykończenie z najnowszą technologią mesh coil.', ['Pineapple Coconut', 'Hubba Bubba', 'Fizzy Cherry'], 'device')">
-            <div class="product-img-wrapper"><svg class="svg-icon" viewBox="0 0 24 24" style="fill:var(--accent);"><path d="M16 2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H8V4h8v16zM10 7h4v2h-4zm0 4h4v2h-4z"/></svg></div>
+        <div class="card" data-category="devices" onclick="openProductModal('WGA Crystal 35k', 60.00, 'Krystaliczne wykończenie z najnowszą technologią mesh coil.', ['Pineapple Coconut', 'Hubba Bubba', 'Fizzy Cherry'], 'device', 'images/wga-35k.png')">
+            <div class="product-img-wrapper"><img src="images/wga-35k.png" alt="WGA Crystal 35k" class="product-img"></div>
             <div><div class="product-title">WGA 35k</div><p class="desc">Do 35 000 puffs. Nowoczesna grzałka mesh dająca głęboki smak.</p></div>
             <div><div class="price">60.00 PLN</div><button class="btn-view">Wybierz smak</button></div>
         </div>
     </div>
+    <section class="delivery-strip" id="delivery" aria-label="Informacje o dostawie">
+        <div><span class="delivery-symbol">01</span><span><strong>Darmowa dostawa</strong><small>od 100 zł w koszyku</small></span></div>
+        <div><span class="delivery-symbol">02</span><span><strong>Wygodny odbiór</strong><small>wybierz paczkomat przy zamówieniu</small></span></div>
+        <div><span class="delivery-symbol">03</span><span><strong>Twoje zamówienia</strong><small>zapisane na koncie po zalogowaniu</small></span></div>
+    </section>
+
         <button class="cart-toggle" onclick="toggleCart()">🛒<span id="cart-count" class="cart-badge">0</span></button>
+        <div class="modal" id="account-modal" onclick="closeAccountModalOutside(event)">
+            <div class="modal-content account-modal-content">
+                <button class="modal-close" type="button" onclick="closeAccountModal()" aria-label="Zamknij">✕</button>
+                <p class="eyebrow">VAPELAB ACCOUNT</p>
+                <div class="modal-header" id="account-title">Witaj ponownie</div>
+                <p class="modal-desc" id="account-description">Zaloguj się, aby sprawdzić historię zamówień.</p>
+                <div class="account-tabs" id="account-tabs" role="tablist" aria-label="Logowanie lub rejestracja">
+                    <button type="button" id="login-tab" class="account-tab active" onclick="setAccountMode('login')">Logowanie</button>
+                    <button type="button" id="register-tab" class="account-tab" onclick="setAccountMode('register')">Nowe konto</button>
+                </div>
+                <form id="login-form" class="account-form" onsubmit="submitAccount(event, 'login')">
+                    <div class="form-group"><label for="login-email">Adres e-mail</label><input type="email" id="login-email" class="form-input" autocomplete="email" required></div>
+                    <div class="form-group"><label for="login-password">Hasło</label><input type="password" id="login-password" class="form-input" autocomplete="current-password" required></div>
+                    <button class="btn-checkout" type="submit">Zaloguj się</button>
+                </form>
+                <form id="register-form" class="account-form" style="display:none" onsubmit="submitAccount(event, 'register')">
+                    <div class="form-group"><label for="register-name">Imię lub nazwa</label><input type="text" id="register-name" class="form-input" minlength="2" maxlength="60" autocomplete="name" required></div>
+                    <div class="form-group"><label for="register-email">Adres e-mail</label><input type="email" id="register-email" class="form-input" maxlength="254" autocomplete="email" required></div>
+                    <div class="form-group"><label for="register-password">Hasło (min. 10 znaków)</label><input type="password" id="register-password" class="form-input" minlength="10" maxlength="128" autocomplete="new-password" required></div>
+                    <div class="form-group"><label for="register-confirm">Powtórz hasło</label><input type="password" id="register-confirm" class="form-input" minlength="10" maxlength="128" autocomplete="new-password" required></div>
+                    <label class="age-confirm"><input type="checkbox" id="adult-confirmed" required><span>Potwierdzam, że mam ukończone 18 lat.</span></label>
+                    <button class="btn-checkout" type="submit">Utwórz konto</button>
+                </form>
+                <p class="account-message" id="account-message" role="status" aria-live="polite"></p>
+                <section class="account-dashboard" id="account-dashboard" style="display:none">
+                    <div class="account-profile"><span class="eyebrow">AKTYWNE KONTO</span><strong id="account-name"></strong><span id="account-email"></span></div>
+                    <div class="account-orders-heading"><h3>Historia zamówień</h3><button type="button" class="quiet-button" onclick="loadAccountOrders()">Odśwież</button></div>
+                    <div class="account-orders-list" id="account-orders-list"></div>
+                    <button type="button" class="btn-view" onclick="logoutAccount()">Wyloguj się</button>
+                </section>
+            </div>
+        </div>
     <div class="cart-sidebar" id="cart-sidebar">
         <div class="cart-header"><h3>Koszyk</h3><button class="close-cart" onclick="toggleCart()">✕</button></div>
         <div class="cart-items" id="cart-items-container"></div>
@@ -171,22 +308,164 @@
 
     <script>
         let cart = []; let totalPrice = 0;
-        const ORDER_API_URL = 'https://vapelab-pages.onrender.com';
+        const ORDER_API_URL = '';
+        let currentAccount = null;
         const icons = {
             liquid: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 8h-2V6c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6h6v2H9V6zm10 14H5V10h14v10z"/></svg>`,
             device: `<svg class="svg-icon" viewBox="0 0 24 24" style="fill:var(--accent);"><path d="M16 2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H8V4h8v16zM10 7h4v2h-4zm0 4h4v2h-4z"/></svg>`
         };
 
-        function openProductModal(name, price, desc, variants, type) {
+        function openProductModal(name, price, desc, variants, type, imageSrc) {
             document.getElementById('modal-product-title').innerText = name;
             document.getElementById('modal-product-desc').innerText = desc;
             document.getElementById('modal-product-price').innerText = price.toFixed(2) + " PLN";
-            document.getElementById('modal-product-img-box').innerHTML = icons[type];
+            document.getElementById('modal-product-img-box').innerHTML = imageSrc ? `<img class="product-img" src="${imageSrc}" alt="${name}">` : icons[type];
             const select = document.getElementById('modal-product-variants'); select.innerHTML = '';
             variants.forEach(v => { select.innerHTML += `<option value="${v}">${v}</option>`; });
             document.getElementById('modal-add-to-cart-btn').onclick = function() { addToCart(name, price, select.value); closeProductModal(); };
             document.getElementById('product-modal').style.display = 'flex';
         }
+        function updateAccountButton() {
+            const button = document.getElementById('account-trigger');
+            if (button) button.innerText = currentAccount ? 'Moje konto' : 'Zaloguj się';
+        }
+
+        function setAccountMode(mode) {
+            document.getElementById('account-tabs').style.display = 'grid';
+            document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none';
+            document.getElementById('register-form').style.display = mode === 'register' ? 'block' : 'none';
+            document.getElementById('account-dashboard').style.display = 'none';
+            document.getElementById('login-tab').classList.toggle('active', mode === 'login');
+            document.getElementById('register-tab').classList.toggle('active', mode === 'register');
+            document.getElementById('account-title').innerText = mode === 'login' ? 'Witaj ponownie' : 'Utwórz konto';
+            document.getElementById('account-description').innerText = mode === 'login'
+                ? 'Zaloguj się, aby sprawdzić historię zamówień.'
+                : 'Załóż konto, aby mieć zamówienia pod ręką.';
+            document.getElementById('account-message').innerText = '';
+        }
+
+        function showAccountDashboard() {
+            document.getElementById('account-tabs').style.display = 'none';
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('account-dashboard').style.display = 'block';
+            document.getElementById('account-title').innerText = 'Twoje konto';
+            document.getElementById('account-description').innerText = 'Dane konta i ostatnie zamówienia.';
+            document.getElementById('account-name').innerText = currentAccount.name;
+            document.getElementById('account-email').innerText = currentAccount.email;
+            document.getElementById('account-message').innerText = '';
+            loadAccountOrders();
+        }
+
+        function openAccountModal() {
+            document.getElementById('account-modal').style.display = 'flex';
+            if (currentAccount) showAccountDashboard();
+            else setAccountMode('login');
+        }
+
+        function closeAccountModal() { document.getElementById('account-modal').style.display = 'none'; }
+        function closeAccountModalOutside(event) {
+            if (event.target.id === 'account-modal') closeAccountModal();
+        }
+
+        async function submitAccount(event, mode) {
+            event.preventDefault();
+            const form = document.getElementById(mode === 'login' ? 'login-form' : 'register-form');
+            const submitButton = form.querySelector('[type="submit"]');
+            const message = document.getElementById('account-message');
+            const email = document.getElementById(`${mode}-email`).value.trim();
+            const password = document.getElementById(`${mode}-password`).value;
+            let payload = { email, password };
+
+            if (mode === 'register') {
+                const confirmPassword = document.getElementById('register-confirm').value;
+                if (password !== confirmPassword) {
+                    message.innerText = 'Hasła nie są takie same.';
+                    return;
+                }
+                payload = {
+                    ...payload,
+                    name: document.getElementById('register-name').value.trim(),
+                    adultConfirmed: document.getElementById('adult-confirmed').checked
+                };
+            }
+
+            submitButton.disabled = true;
+            submitButton.innerText = mode === 'login' ? 'Logowanie...' : 'Tworzenie konta...';
+            message.innerText = '';
+            try {
+                const response = await fetch(`/api/account/${mode}`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(result.error || 'Nie udało się zalogować.');
+                currentAccount = result.account;
+                updateAccountButton();
+                showAccountDashboard();
+            } catch (error) {
+                message.innerText = error.message || 'Nie udało się połączyć z serwerem.';
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerText = mode === 'login' ? 'Zaloguj się' : 'Utwórz konto';
+            }
+        }
+
+        async function loadAccountOrders() {
+            const list = document.getElementById('account-orders-list');
+            if (!currentAccount) return;
+            try {
+                const response = await fetch('/api/account/orders', { credentials: 'same-origin' });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(result.error || 'Nie udało się pobrać zamówień.');
+                list.replaceChildren();
+                if (result.orders.length === 0) {
+                    const empty = document.createElement('p');
+                    empty.className = 'account-empty';
+                    empty.innerText = 'Nie masz jeszcze zamówień zapisanych na koncie.';
+                    list.append(empty);
+                    return;
+                }
+                result.orders.forEach(order => {
+                    const row = document.createElement('div');
+                    row.className = 'account-order';
+                    const code = document.createElement('strong');
+                    code.innerText = order.code;
+                    const details = document.createElement('span');
+                    const items = order.items.map(item => `${item.name} (${item.variant})`).join(', ');
+                    const date = new Intl.DateTimeFormat('pl-PL', { dateStyle: 'medium' }).format(new Date(order.createdAt));
+                    details.innerText = `${items} · ${order.total.toFixed(2)} PLN · ${date}`;
+                    row.append(code, details);
+                    list.append(row);
+                });
+            } catch (error) {
+                list.innerText = error.message || 'Nie udało się pobrać zamówień.';
+            }
+        }
+
+        async function logoutAccount() {
+            try {
+                await fetch('/api/account/logout', { method: 'POST', credentials: 'same-origin' });
+            } finally {
+                currentAccount = null;
+                updateAccountButton();
+                closeAccountModal();
+            }
+        }
+
+        async function initializeAccount() {
+            try {
+                const response = await fetch('/api/account/me', { credentials: 'same-origin' });
+                const result = await response.json();
+                currentAccount = result.account;
+                updateAccountButton();
+            } catch (error) {
+                updateAccountButton();
+            }
+        }
+
         function closeProductModal() { document.getElementById('product-modal').style.display = 'none'; }
         function closeProductModalOutside(e) { if(e.target.id === 'product-modal') closeProductModal(); }
         function addToCart(name, price, variant) { cart.push({ name, price, variant }); updateCart(); const t = document.querySelector('.cart-toggle'); t.style.transform = 'scale(1.1)'; setTimeout(() => t.style.transform = 'scale(1)', 150); }
@@ -245,6 +524,7 @@
                 document.getElementById('order-result').style.display = 'block';
                 cart = [];
                 updateCart();
+                if (currentAccount) loadAccountOrders();
             } catch (error) {
                 alert(`${error.message} Otwórz sklep przez serwer (npm start), nie bezpośrednio z pliku HTML.`);
             } finally {
@@ -261,6 +541,7 @@
                 alert(`Kod zamówienia: ${code}`);
             }
         }
+        initializeAccount();
     </script>
 </body>
 </html>
