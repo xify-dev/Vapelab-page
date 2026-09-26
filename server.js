@@ -381,6 +381,10 @@ const server = http.createServer((request, response) => {
         return;
     }
 
+    if (request.method === 'GET' && pathname === '/health') {
+        sendJson(response, 200, { status: 'ok' });
+        return;
+    }
     if (request.method === 'GET' && pathname === '/api/account/me') {
         const account = getSessionAccount(request);
         sendJson(response, 200, { account: account ? publicAccount(account) : null });

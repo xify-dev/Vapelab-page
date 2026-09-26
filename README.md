@@ -12,12 +12,15 @@ Strona tworzy zamówienie na serwerze i zwraca kod `VL-...`. Na Discordzie `/kod
 
 Komenda zostanie zarejestrowana na wskazanym serwerze. Zamówienia są przechowywane w `data/orders.json`. Wdrożenie publiczne wymaga hostowania strony i tego serwera razem pod tym samym adresem HTTPS; bot i API korzystają z tego samego zapisu.
 
-## Połączenie istniejącego bota ticketów
 ## Konta i trwałość danych
 
 Rejestracja wymaga potwierdzenia ukończenia 18 lat i hasła o długości co najmniej 10 znaków. Hasła są przechowywane jako skróty `scrypt`; sesja jest w ciasteczku `HttpOnly` i wygasa po 7 dniach. Po restarcie serwera użytkownik musi zalogować się ponownie.
 
 Konta i zamówienia są zapisywane w plikach JSON w `data/`. Pliki kont są wykluczone z Gita. Na Renderze skonfiguruj trwały dysk i ustaw zmienną `DATA_DIRECTORY` na jego punkt montowania; bez trwałego dysku dane JSON mogą zniknąć po restarcie lub wdrożeniu.
+
+## UptimeRobot
+
+W UptimeRobot dodaj monitor typu **HTTP(s)** z metodą `GET` i adresem `https://<adres-usługi-render>.onrender.com/health`. Endpoint zwraca HTTP 200, gdy serwer działa. UptimeRobot jest usługą zewnętrzną, a nie zależnością projektu; `requirements.txt` nie jest używany przez ten serwer Node.js.
 
 ## Połączenie istniejącego bota ticketów
 
