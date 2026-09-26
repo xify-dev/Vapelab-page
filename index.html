@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VapeLab | Official Store</title>
+    <style>
+        :root {
+            --primary: #a855f7;
+            --primary-hover: #9333ea;
+            --accent: #2ecc71;
+            --bg-dark: #0b0b0f;
+            --bg-card: #13131a;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+        }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+        
+        .top-bar { background-color: #1e1b4b; color: #c084fc; text-align: center; padding: 12px 10px; font-weight: 600; font-size: 0.9em; border-bottom: 1px solid #3b0764; }
+        .header { padding: 50px 20px; background: radial-gradient(circle at top, #2e1065 0%, var(--bg-dark) 70%); text-align: center; }
+        .banner { max-width: 550px; width: 100%; height: auto; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); margin-bottom: 25px; }
+        h1 { font-size: 3.2em; color: #ffffff; margin: 10px 0; font-weight: 800; letter-spacing: 2px; }
+        h1 span { color: var(--primary); text-shadow: 0 0 20px rgba(147, 51, 234, 0.4); }
+        
+        .delivery-tracker { background-color: var(--bg-card); max-width: 480px; margin: 25px auto 0 auto; padding: 15px 25px; border-radius: 16px; border: 1px solid #1e1e2f; text-align: center; }
+        .tracker-text { font-size: 0.9em; margin-bottom: 12px; color: var(--text-muted); }
+        .progress-bar-bg { background-color: #1e1e2f; width: 100%; height: 10px; border-radius: 5px; overflow: hidden; }
+        .progress-bar-fill { background: linear-gradient(90deg, var(--primary), var(--accent)); width: 0%; height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+        
+        .categories { display: flex; justify-content: center; gap: 12px; margin: 40px 0; flex-wrap: wrap; }
+        .category-btn { background-color: var(--bg-card); color: var(--text-main); border: 1px solid #27273a; padding: 12px 28px; font-size: 0.95em; font-weight: 600; border-radius: 14px; cursor: pointer; transition: all 0.25s; }
+        .category-btn:hover, .category-btn.active { background-color: var(--primary); border-color: var(--primary); color: #fff; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(147, 51, 234, 0.3); }
+        
+        .shop-section { max-width: 1200px; margin: 0 auto; padding: 0 20px 80px 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .card { background-color: var(--bg-card); border-radius: 24px; padding: 25px; border: 1px solid #1e1e2f; transition: all 0.3s; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; }
+        .card:hover { transform: translateY(-6px); border-color: var(--primary); box-shadow: 0 20px 40px rgba(147, 51, 234, 0.1); }
+                .product-img-wrapper { width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; background-color: #0b0b0f; border-radius: 16px; padding: 10px; box-sizing: border-box; }
+        .product-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .product-title { font-size: 1.35em; font-weight: 700; margin: 5px 0 10px 0; }
+        .price { font-size: 1.7em; color: var(--accent); font-weight: 800; margin: 10px 0; }
+        .desc { color: var(--text-muted); font-size: 0.92em; line-height: 1.5; margin-bottom: 25px; flex-grow: 1; }
+        .btn-view { background-color: #1e1e2f; color: #ffffff; border: 1px solid #27273a; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; width: 100%; text-transform: uppercase; }
+        .btn-view:hover { background-color: var(--primary); }
+        
+        .cart-toggle { position: fixed; bottom: 30px; right: 30px; background-color: var(--primary); color: white; border: none; width: 65px; height: 65px; border-radius: 20px; font-size: 1.7em; cursor: pointer; box-shadow: 0 10px 25px rgba(147, 51, 234, 0.4); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .cart-badge { position: absolute; top: -5px; right: -5px; background-color: var(--danger); color: white; font-size: 0.55em; font-weight: bold; padding: 4px 8px; border-radius: 10px; border: 2px solid var(--bg-dark); }
+        
+        .cart-sidebar { position: fixed; top: 0; right: -400px; width: 360px; height: 100%; background-color: #0d0d12; border-left: 1px solid #1e1e2f; box-shadow: -15px 0 40px rgba(0,0,0,0.6); z-index: 3000; transition: right 0.4s ease; padding: 30px; display: flex; flex-direction: column; box-sizing: border-box; }
+        .cart-sidebar.open { right: 0; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e1e2f; padding-bottom: 20px; margin-bottom: 20px; }
+        .close-cart { background: none; border: none; color: var(--text-main); font-size: 1.6em; cursor: pointer; }
+        .cart-items { flex-grow: 1; overflow-y: auto; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--bg-card); padding: 15px; border-radius: 14px; margin-bottom: 12px; border: 1px solid #1e1e2f; }
+        .item-info h4 { margin: 0; font-size: 0.95em; }
+        .item-info p { margin: 4px 0 0 0; color: var(--accent); font-weight: bold; font-size: 0.9em; }
+        .item-variant { font-size: 0.8em; color: var(--text-muted); display: block; margin-top: 2px; }
+        .btn-remove { background: none; border: none; color: var(--danger); cursor: pointer; }
+        .cart-summary { border-top: 1px solid #1e1e2f; padding-top: 20px; }
+        .total-price { display: flex; justify-content: space-between; font-size: 1.25em; font-weight: 700; margin-bottom: 20px; }
+        .btn-checkout { display: block; background-color: var(--primary); color: white; text-align: center; text-decoration: none; padding: 16px; border-radius: 14px; font-weight: 600; text-transform: uppercase; width: 100%; border: none; cursor: pointer; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 4000; align-items: center; justify-content: center; }
+        .modal-content { background-color: var(--bg-card); border: 1px solid #27273a; padding: 35px; border-radius: 24px; max-width: 440px; width: 100%; box-sizing: border-box; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .modal-header { font-size: 1.5em; font-weight: 700; margin-bottom: 15px; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.88em; font-weight: 600; color: #cbd5e1; }
+        .form-select, .form-input { width: 100%; background-color: #1e1e2f; border: 1px solid #27273a; padding: 14px; border-radius: 12px; color: white; box-sizing: border-box; font-size: 1em; }
+        .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 1.3em; cursor: pointer; }
+        .modal-desc { color: var(--text-muted); font-size: 0.92em; line-height: 1.5; margin-bottom: 20px; text-align: center; }
+        .modal-img-wrapper { width: 100%; height: 160px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+        .svg-icon { width: 120px; height: 120px; fill: var(--primary); filter: drop-shadow(0 0 10px rgba(168,85,247,0.5)); }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar" id="top-bar-text">🚚 DARMOWA DOSTAWA NA TERENIE CAŁEGO KRAJU DLA ZAMÓWIEŃ OD 100 ZŁ!</div>
+
+    <div class="header">
+        <img src="https://discordapp.net" alt="VapeLab Banner" class="banner">
+        <h1>VapeLab <span>Store</span></h1>
+        <div class="delivery-tracker">
+            <div id="tracker-text" class="tracker-text">Koszyk jest pusty. Dodaj produkty, aby obliczyć dostawę.</div>
+            <div class="progress-bar-bg"><div id="progress-bar" class="progress-bar-fill"></div></div>
+        </div>
+    </div>
+
+    <div class="categories">
+        <button class="category-btn active" onclick="filterCategory('all', this)">Wszystko</button>
+        <button class="category-btn" onclick="filterCategory('liquids', this)">Liquidy</button>
+        <button class="category-btn" onclick="filterCategory('devices', this)">Jednorazówki</button>
+    </div>
+        <div class="shop-section">
+        <!-- PRODUKT 1 -->
+        <div class="card" data-category="liquids" onclick="openProductModal('Liquid Vapen 10ml', 17.99, 'Oficjalna sól nikotynowa o zbalansowanym hicie w gardło i wyrazistym aromacie.', ['Watermelon Ice', 'Blueberry Pomegranate', 'Kiwi Passion Fruit'], 'liquid')">
+            <div class="product-img-wrapper"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 8h-2V6c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6h6v2H9V6zm10 14H5V10h14v10z"/></svg></div>
+            <div><div class="product-title">Liquid Vapen 10ml</div><p class="desc">Znakomite odwzorowanie smaku i idealne nasycenie. Klasyka podów.</p></div>
+            <div><div class="price">17.99 PLN</div><button class="btn-view">Wybierz smak</button></div>
+        </div>
+        <!-- PRODUKT 2 -->
+        <div class="card" data-category="devices" onclick="openProductModal('Fumot Digital Box 25k', 55.99, 'Urządzenie z inteligentnym wyświetlaczem LED poziomu płynu oraz baterii.', ['Blue Razz Cherry', 'Strawberry Watermelon', 'Juicy Peach Ice'], 'device')">
+            <div class="product-img-wrapper"><svg class="svg-icon" viewBox="0 0 24 24" style="fill:var(--accent);"><path d="M16 2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H8V4h8v16zM10 7h4v2h-4zm0 4h4v2h-4z"/></svg></div>
+            <div><div class="product-title">Fumot 25k</div><p class="desc">Aż do 25 000 zaciągnięć. Cyfrowy podgląd stanu liquidu na żywo.</p></div>
+            <div><div class="price">55.99 PLN</div><button class="btn-view">Wybierz wariant</button></div>
+        </div>
+        <!-- PRODUKT 3 -->
+        <div class="card" data-category="liquids" onclick="openProductModal('Merrymi Liquid 30ml', 49.00, 'Wydajny liquid premium o większej pojemności i głębokim profilu smakowym.', ['Mamba Black', 'Bubblegum Burst', 'Sweet Candy'], 'liquid')">
+            <div class="product-img-wrapper"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 8h-2V6c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6h6v2H9V6zm10 14H5V10h14v10z"/></svg></div>
+            <div><div class="product-title">Merrymi Liquid 30ml</div><p class="desc">Pojemność 30ml w klasie premium. Najlepszy wybór do intensywnego wapowania.</p></div>
+            <div><div class="price">49.00 PLN</div><button class="btn-view">Wybierz smak</button></div>
+        </div>
+        <!-- PRODUKT 4 -->
+        <div class="card" data-category="liquids" onclick="openProductModal('WGA Crystal Liquid 10ml', 18.89, 'Sól nikotynowa o idealnej czystości chemicznej w krystalicznym opakowaniu.', ['Lemon Lime', 'Cherry Ice', 'Gummy Bear'], 'liquid')">
+            <div class="product-img-wrapper"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 8h-2V6c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6h6v2H9V6zm10 14H5V10h14v10z"/></svg></div>
+            <div><div class="product-title">WGA Liquid 10ml</div><p class="desc">Krystalicznie czysty, głęboki aromat. Gwarantuje brak przypaleń.</p></div>
+            <div><div class="price">18.89 PLN</div><button class="btn-view">Wybierz smak</button></div>
+        </div>
+        <!-- PRODUKT 5 -->
+        <div class="card" data-category="devices" onclick="openProductModal('Bang King 100k', 79.99, 'Monstrualne urządzenie z regulacją przepływu powietrza.', ['Strawberry Mango', 'Watermelon Ice', 'Love 66'], 'device')">
+            <div class="product-img-wrapper"><svg class="svg-icon" viewBox="0 0 24 24" style="fill:var(--accent);"><path d="M16 2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H8V4h8v16zM10 7h4v2h-4zm0 4h4v2h-4z"/></svg></div>
+            <div><div class="product-title">Bang King 100k</div><p class="desc">Ekstremalnie długa żywotność i maksymalna moc dla wymagających.</p></div>
+            <div><div class="price">79.99 PLN</div><button class="btn-view">Wybierz wariant</button></div>
+        </div>
+        <!-- PRODUKT 6 -->
+        <div class="card" data-category="devices" onclick="openProductModal('WGA Crystal 35k', 60.00, 'Krystaliczne wykończenie z najnowszą technologią mesh coil.', ['Pineapple Coconut', 'Hubba Bubba', 'Fizzy Cherry'], 'device')">
+            <div class="product-img-wrapper"><svg class="svg-icon" viewBox="0 0 24 24" style="fill:var(--accent);"><path d="M16 2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H8V4h8v16zM10 7h4v2h-4zm0 4h4v2h-4z"/></svg></div>
+            <div><div class="product-title">WGA 35k</div><p class="desc">Do 35 000 puffs. Nowoczesna grzałka mesh dająca głęboki smak.</p></div>
+            <div><div class="price">60.00 PLN</div><button class="btn-view">Wybierz smak</button></div>
+        </div>
+    </div>
+        <button class="cart-toggle" onclick="toggleCart()">🛒<span id="cart-count" class="cart-badge">0</span></button>
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header"><h3>Koszyk</h3><button class="close-cart" onclick="toggleCart()">✕</button></div>
+        <div class="cart-items" id="cart-items-container"></div>
+        <div class="cart-summary">
+            <div class="total-price"><span>Suma:</span><span id="total-price-text">0.00 PLN</span></div>
+            <button class="btn-checkout" onclick="openCheckoutModal()">Dalej</button>
+        </div>
+    </div>
+    <div class="modal" id="product-modal" onclick="closeProductModalOutside(event)">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeProductModal()">✕</button>
+            <div class="modal-img-wrapper" id="modal-product-img-box"></div>
+            <div class="modal-header" id="modal-product-title">Nazwa</div>
+            <p class="modal-desc" id="modal-product-desc">Opis...</p>
+            <div class="form-group"><label>Wybierz Smak</label><select id="modal-product-variants" class="form-select"></select></div>
+            <div class="price" style="text-align: center; margin-bottom: 20px;" id="modal-product-price">0.00 PLN</div>
+            <button class="btn-checkout" id="modal-add-to-cart-btn">Dodaj do koszyka</button>
+        </div>
+    </div>
+    <div class="modal" id="checkout-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCheckoutModal()">✕</button>
+            <div class="modal-header">Dane do wysyłki</div>
+            <p class="modal-desc">Podaj tylko e-mail oraz telefon, aby sfinalizować zamówienie w ticketach.</p>
+            <div class="form-group"><label>Adres E-mail</label><input type="email" id="customer-email" class="form-input" placeholder="np. nazwa@gmail.com" required></div>
+            <div class="form-group"><label>Numer Telefonu</label><input type="tel" id="customer-phone" class="form-input" placeholder="np. 123456789" required></div>
+            <button class="btn-checkout" onclick="submitOrder()">Złóż zamówienie na Discordzie</button>
+        </div>
+    </div>
+
+    <script>
+        let cart = []; let totalPrice = 0;
+        const icons = {
+            liquid: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 8h-2V6c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6h6v2H9V6zm10 14H5V10h14v10z"/></svg>`,
+            device: `<svg class="svg-icon" viewBox="0 0 24 24" style="fill:var(--accent);"><path d="M16 2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H8V4h8v16zM10 7h4v2h-4zm0 4h4v2h-4z"/></svg>`
+        };
+
+        function openProductModal(name, price, desc, variants, type) {
+            document.getElementById('modal-product-title').innerText = name;
+            document.getElementById('modal-product-desc').innerText = desc;
+            document.getElementById('modal-product-price').innerText = price.toFixed(2) + " PLN";
+            document.getElementById('modal-product-img-box').innerHTML = icons[type];
+            const select = document.getElementById('modal-product-variants'); select.innerHTML = '';
+            variants.forEach(v => { select.innerHTML += `<option value="${v}">${v}</option>`; });
+            document.getElementById('modal-add-to-cart-btn').onclick = function() { addToCart(name, price, select.value); closeProductModal(); };
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+        function closeProductModal() { document.getElementById('product-modal').style.display = 'none'; }
+        function closeProductModalOutside(e) { if(e.target.id === 'product-modal') closeProductModal(); }
+        function addToCart(name, price, variant) { cart.push({ name, price, variant }); updateCart(); const t = document.querySelector('.cart-toggle'); t.style.transform = 'scale(1.1)'; setTimeout(() => t.style.transform = 'scale(1)', 150); }
+        function removeFromCart(index) { cart.splice(index, 1); updateCart(); }
+
+        function updateCart() {
+            const countBadge = document.getElementById('cart-count'); const itemsContainer = document.getElementById('cart-items-container');
+            const priceText = document.getElementById('total-price-text'); const trackerText = document.getElementById('tracker-text');
+            const progressBar = document.getElementById('progress-bar'); const topBar = document.getElementById('top-bar-text');
+            countBadge.innerText = cart.length; itemsContainer.innerHTML = ''; totalPrice = 0;
+            cart.forEach((item, index) => { totalPrice += item.price; itemsContainer.innerHTML += `<div class="cart-item"><div class="item-info"><h4>${item.name}</h4><span class="item-variant">Wariant: ${item.variant}</span><p>${item.price.toFixed(2)} PLN</p></div><button class="btn-remove" onclick="removeFromCart(${index})">✕</button></div>`; });
+            priceText.innerText = totalPrice.toFixed(2) + " PLN";
+            if (totalPrice === 0) { trackerText.innerText = "Koszyk jest pusty. Dodaj produkty, aby obliczyć dostawę."; progressBar.style.width = "0%"; topBar.innerText = "🚚 DARMOWA DOSTAWA NA TERENIE CAŁEGO KRAJU DLA ZAMÓWIEŃ OD 100 ZŁ!"; }
+            else if (totalPrice >= 100) { trackerText.innerHTML = "🎉 Kwalifikujesz się do <strong>DARMOWEJ DOSTAWY</strong>!"; progressBar.style.width = "100%"; topBar.innerText = "🔥 DOSTAWA TWOJEGO ZAMÓWIENIA JEST CAŁKOWICIE DARMOWA!"; }
+            else { let missing = 100 - totalPrice; trackerText.innerHTML = `Brakuje Ci <strong>${missing.toFixed(2)} PLN</strong> do darmowej dostawy.`; progressBar.style.width = (totalPrice) + "%"; topBar.innerText = `🚚 Do darmowej dostawy brakuje jeszcze tylko ${missing.toFixed(2)} PLN!`; }
+        }
+        function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('open'); }
+        function openCheckoutModal() { if(cart.length===0){alert("Koszyk jest pusty!");return;} document.getElementById('checkout-modal').style.display = 'flex'; }
+        function closeCheckoutModal() { document.getElementById('checkout-modal').style.display = 'none'; }
+        function filterCategory(category, button) { document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); document.querySelectorAll('.card').forEach(card => { card.style.display = (category === 'all' || card.getAttribute('data-category') === category) ? 'flex' : 'none'; }); }
+
+        function submitOrder() {
+            const email = document.getElementById('customer-email').value.trim(); const phone = document.getElementById('customer-phone').value.trim();
+            if(!email || !phone){ alert("Proszę uzupełnić dane!"); return; }
+            let summary = "ZAMÓWIENIE VAPELAB:\\n";
+            cart.forEach(item => { summary += `- ${item.name} [${item.variant}] (${item.price.toFixed(2)} PLN)\\n`; });
+            summary += `Suma: ${totalPrice.toFixed(2)} PLN\\nWysyłka: ${(totalPrice >= 100 ? "Darmowa" : "Standardowa")}\\nKontakt: ${email} | Tel: ${phone}\\n`;
+            alert("ZAMÓWIENIE PRZYGOTOWANE!\\n\\nSkopiuj podsumowanie z następnego okna i wklej je na Discordzie.");
+            alert(summary); window.open("https://discord.gg", "_blank"); closeCheckoutModal();
+        }
+    </script>
+</body>
+</html>
