@@ -203,11 +203,11 @@
     <div class="categories">
         <button class="category-btn active" onclick="filterCategory('all', this)">Wszystko</button>
         <button class="category-btn" onclick="filterCategory('liquids', this)">Liquidy</button>
-        <button class="category-btn" onclick="filterCategory('devices', this)">Jednorazówki</button>
+        <button class="category-btn" onclick="filterCategory('devices', this)">Urządzenia</button>
     </div>
     <div class="catalog-toolbar">
         <label class="catalog-search" for="product-search"><span>Szukaj w ofercie</span><input id="product-search" type="search" placeholder="Produkt, smak, pojemność..." oninput="applyProductFilters()"></label>
-        <span class="catalog-result-count" id="product-result-count" aria-live="polite">6 produktów</span>
+        <span class="catalog-result-count" id="product-result-count" aria-live="polite">12 produktów</span>
         <label class="catalog-sort" for="product-sort"><span>Sortuj</span><select id="product-sort" onchange="applyProductFilters()"><option value="featured">Polecane</option><option value="price-asc">Cena: rosnąco</option><option value="price-desc">Cena: malejąco</option><option value="name">Nazwa: A–Z</option></select></label>
         <button type="button" class="favorites-filter" id="favorites-filter" aria-pressed="false" onclick="toggleFavoritesFilter()">☆ Ulubione</button>
     </div>
@@ -247,6 +247,42 @@
             <div class="product-img-wrapper"><img src="images/wga-35k.png" alt="WGA Crystal 35k" class="product-img"><button type="button" class="favorite-toggle" aria-label="Dodaj do ulubionych" aria-pressed="false" onclick="toggleFavorite(event, this)">♡</button></div>
             <div><div class="product-title">WGA 35k</div><p class="desc">Do 35 000 puffs. Nowoczesna grzałka mesh dająca głęboki smak.</p></div>
             <div><div class="price">60.00 PLN</div><button class="btn-view">Wybierz smak</button></div>
+        </div>
+        <!-- PRODUKT 7 -->
+        <div class="card" data-category="devices" data-search="smok nord 5 kit pod zestaw urządzenie black red black green" onclick="openProductModal('SMOK Nord 5 Kit', 149.99, 'Kompaktowy zestaw pod z regulacją mocy i wymiennymi grzałkami.', ['Black Red', 'Black Green'], 'device', 'images/smok-nord-5-kit.png')">
+            <div class="product-img-wrapper"><img src="images/smok-nord-5-kit.png" alt="SMOK Nord 5 Kit" class="product-img"><button type="button" class="favorite-toggle" aria-label="Dodaj do ulubionych" aria-pressed="false" onclick="toggleFavorite(event, this)">♡</button></div>
+            <div><div class="product-title">SMOK Nord 5 Kit</div><p class="desc">Kompaktowy zestaw pod z regulacją mocy i wymiennymi grzałkami.</p></div>
+            <div><div class="price">149.99 PLN</div><button class="btn-view">Wybierz kolor</button></div>
+        </div>
+        <!-- PRODUKT 8 -->
+        <div class="card" data-category="devices" data-search="lost vape centaurus m200 mod vape mod" onclick="openProductModal('Lost Vape Centaurus M200 Mod', 280.00, 'Mod Lost Vape Centaurus M200.', ['Standard'], 'device', 'images/centaurur-m200-mod.png')">
+            <div class="product-img-wrapper"><img src="images/centaurur-m200-mod.png" alt="Lost Vape Centaurus M200 Mod" class="product-img"><button type="button" class="favorite-toggle" aria-label="Dodaj do ulubionych" aria-pressed="false" onclick="toggleFavorite(event, this)">♡</button></div>
+            <div><div class="product-title">Lost Vape Centaurus M200 Mod</div><p class="desc">Mod Lost Vape Centaurus M200.</p></div>
+            <div><div class="price">280.00 PLN</div><button class="btn-view">Wybierz wariant</button></div>
+        </div>
+        <!-- PRODUKT 9 -->
+        <div class="card" data-category="devices" data-search="lost vape centaurus m100 mod vape mod" onclick="openProductModal('Lost Vape Centaurus M100 Mod', 230.00, 'Mod Lost Vape Centaurus M100.', ['Standard'], 'device', 'images/centaurus-m100-mod.png')">
+            <div class="product-img-wrapper"><img src="images/centaurus-m100-mod.png" alt="Lost Vape Centaurus M100 Mod" class="product-img"><button type="button" class="favorite-toggle" aria-label="Dodaj do ulubionych" aria-pressed="false" onclick="toggleFavorite(event, this)">♡</button></div>
+            <div><div class="product-title">Lost Vape Centaurus M100 Mod</div><p class="desc">Mod Lost Vape Centaurus M100.</p></div>
+            <div><div class="price">230.00 PLN</div><button class="btn-view">Wybierz wariant</button></div>
+        </div>
+        <!-- PRODUKT 10 -->
+        <div class="card" data-category="devices" data-search="oxva xlim go 2 pod pod system" onclick="openProductModal('OXVA XLIM GO 2 Pod', 150.00, 'Pod OXVA XLIM GO 2.', ['Standard'], 'device', 'images/oxva-xlim go 2 pod.png')">
+            <div class="product-img-wrapper"><img src="images/oxva-xlim go 2 pod.png" alt="OXVA XLIM GO 2 Pod" class="product-img"><button type="button" class="favorite-toggle" aria-label="Dodaj do ulubionych" aria-pressed="false" onclick="toggleFavorite(event, this)">♡</button></div>
+            <div><div class="product-title">OXVA XLIM GO 2 Pod</div><p class="desc">Pod OXVA XLIM GO 2.</p></div>
+            <div><div class="price">150.00 PLN</div><button class="btn-view">Wybierz wariant</button></div>
+        </div>
+        <!-- PRODUKT 11 -->
+        <div class="card" data-category="devices" data-search="geekvape aegis legend 3 mod vape mod" onclick="openProductModal('GeekVape Aegis Legend 3 Mod', 350.00, 'Mod GeekVape Aegis Legend 3.', ['Standard'], 'device', 'images/aegis legend 3 mod.png')">
+            <div class="product-img-wrapper"><img src="images/aegis legend 3 mod.png" alt="GeekVape Aegis Legend 3 Mod" class="product-img"><button type="button" class="favorite-toggle" aria-label="Dodaj do ulubionych" aria-pressed="false" onclick="toggleFavorite(event, this)">♡</button></div>
+            <div><div class="product-title">GeekVape Aegis Legend 3 Mod</div><p class="desc">Mod GeekVape Aegis Legend 3.</p></div>
+            <div><div class="price">350.00 PLN</div><button class="btn-view">Wybierz wariant</button></div>
+        </div>
+        <!-- PRODUKT 12 -->
+        <div class="card" data-category="devices" data-search="oxva xlim go pod pod system" onclick="openProductModal('OXVA XLIM GO', 110.00, 'Pod OXVA XLIM GO.', ['Standard'], 'device', 'images/oxva xlim go.png')">
+            <div class="product-img-wrapper"><img src="images/oxva xlim go.png" alt="OXVA XLIM GO" class="product-img"><button type="button" class="favorite-toggle" aria-label="Dodaj do ulubionych" aria-pressed="false" onclick="toggleFavorite(event, this)">♡</button></div>
+            <div><div class="product-title">OXVA XLIM GO</div><p class="desc">Pod OXVA XLIM GO.</p></div>
+            <div><div class="price">110.00 PLN</div><button class="btn-view">Wybierz wariant</button></div>
         </div>
     </div>
     <p class="empty-results" id="empty-results" hidden>Brak produktów spełniających wybrane kryteria.</p>
@@ -303,7 +339,7 @@
             <div class="modal-img-wrapper" id="modal-product-img-box"></div>
             <div class="modal-header" id="modal-product-title">Nazwa</div>
             <p class="modal-desc" id="modal-product-desc">Opis...</p>
-            <div class="form-group"><label>Wybierz Smak</label><select id="modal-product-variants" class="form-select"></select></div>
+            <div class="form-group"><label>Wybierz wariant</label><select id="modal-product-variants" class="form-select"></select></div>
             <div class="price" style="text-align: center; margin-bottom: 20px;" id="modal-product-price">0.00 PLN</div>
             <button class="btn-checkout" id="modal-add-to-cart-btn">Dodaj do koszyka</button>
         </div>

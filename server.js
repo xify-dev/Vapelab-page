@@ -25,7 +25,13 @@ const catalog = {
     'Merrymi Liquid 30ml': { price: 49.00, variants: ['Mamba Black', 'Bubblegum Burst', 'Sweet Candy'] },
     'WGA Crystal Liquid 10ml': { price: 18.89, variants: ['Lemon Lime', 'Cherry Ice', 'Gummy Bear'] },
     'Bang King 100k': { price: 79.99, variants: ['Strawberry Mango', 'Watermelon Ice', 'Love 66'] },
-    'WGA Crystal 35k': { price: 60.00, variants: ['Pineapple Coconut', 'Hubba Bubba', 'Fizzy Cherry'] }
+    'WGA Crystal 35k': { price: 60.00, variants: ['Pineapple Coconut', 'Hubba Bubba', 'Fizzy Cherry'] },
+    'SMOK Nord 5 Kit': { price: 149.99, variants: ['Black Red', 'Black Green'] },
+    'Lost Vape Centaurus M200 Mod': { price: 280.00, variants: ['Standard'] },
+    'Lost Vape Centaurus M100 Mod': { price: 230.00, variants: ['Standard'] },
+    'OXVA XLIM GO 2 Pod': { price: 150.00, variants: ['Standard'] },
+    'GeekVape Aegis Legend 3 Mod': { price: 350.00, variants: ['Standard'] },
+    'OXVA XLIM GO': { price: 110.00, variants: ['Standard'] }
 };
 
 fs.mkdirSync(dataDirectory, { recursive: true });
